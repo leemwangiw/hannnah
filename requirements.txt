@@ -1,0 +1,4 @@
+# requirements.txt or Pipfile
+click
+requests
+SQLAlchemy
