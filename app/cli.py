@@ -1,45 +1,30 @@
 import click
-from app.database import SessionLocal, init_db
-from app.views import add_user, add_location, show_weather_for_location
+# Step 1: Define a list of sample cities and their forecasts
+CITIES = [
+    {"city": "New York", "forecast": "Sunny, 25°C"},
+    {"city": "Los Angeles", "forecast": "Cloudy, 20°C"},
+    {"city": "London", "forecast": "Rainy, 18°C"},
+    {"city": "Paris", "forecast": "Sunny, 22°C"},
+    {"city": "Tokyo", "forecast": "Partly cloudy, 19°C"},
+    {"city": "Sydney", "forecast": "Clear, 30°C"},
+    {"city": "Berlin", "forecast": "Windy, 16°C"},
+    {"city": "Moscow", "forecast": "Snowy, -5°C"},
+    {"city": "Cairo", "forecast": "Hot, 35°C"},
+    {"city": "Toronto", "forecast": "Cool, 15°C"}
+]
 
-# Initialize database
-init_db()
-
-@click.group()
-def cli():
-    """Weather Forecast Application"""
-    pass
-
+# Step 2: Create the show-weather command
 @click.command()
-@click.option('--username', prompt='Your username', help='Enter your username.')
-@click.option('--email', prompt='Your email', help='Enter your email.')
-def create_user(username, email):
-    """Create a new user."""
-    session = SessionLocal()
-    add_user(session, username, email)
-    session.close()
-
-@click.command()
-@click.option('--username', prompt='Your username', help='Enter your username.')
-@click.option('--location', prompt='Location name', help='Enter location to save.')
-def add_location_cmd(username, location):
-    """Add a new location."""
-    session = SessionLocal()
-    add_location(session, username, location)
-    session.close()
-
-@click.command()
-@click.option('--location', prompt='Location name', help='Enter location to view weather.')
+@click.option('--location', prompt='Location name', help='The location for which to show the weather.')
 def show_weather(location):
-    """Show current weather for a location."""
-    session = SessionLocal()
-    show_weather_for_location(session, location)
-    session.close()
+    # Find the city's forecast
+    city_forecast = next((city['forecast'] for city in CITIES if city['city'].lower() == location.lower()), None)
 
-# Register commands to the CLI
-cli.add_command(create_user)
-cli.add_command(add_location_cmd)
-cli.add_command(show_weather)
+    if city_forecast:
+        click.echo(f"The weather in {location} is: {city_forecast}")
+    else:
+        click.echo(f"Sorry, no forecast available for {location}")
 
-if __name__ == '__main__':
-    cli()
+# Step 3: Add the command to the CLI
+if __name__ == "__main__":
+    show_weather()
